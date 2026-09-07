@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Kenangan 9E - SMPN 1 Plemahan</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Background Pemandangan Sunset dari Unsplash */
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Navigasi */
+        nav {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        nav button:hover, nav button.active {
+            background: #ff7e5f;
+            border-color: #ff7e5f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 126, 95, 0.5);
+        }
+
+        /* Tombol Musik Spesifik */
+        .music-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+            padding-left: 15px;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-music {
+            background: rgba(255, 255, 255, 0.15) !important;
+            padding: 8px 14px !important;
+            font-size: 0.85rem !important;
+            border-radius: 15px !important;
+        }
+
+        .btn-music.playing {
+            background: #2ec4b6 !important;
+            border-color: #2ec4b6 !important;
+        }
+
+        /* Container Utama */
+        .container {
+            margin-top: 120px;
+            margin-bottom: 50px;
+            width: 90%;
+            max-width: 1000px;
+        }
+
+        /* Halaman / Section */
+        .page {
+            display: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            animation: fadeIn 0.6s ease-in-out forwards;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Desain Sampul */
+        .cover {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .cover h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            color: #ffd166;
+        }
+
+        .cover h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .cover p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            line-height: 1.6;
+        }
+
+        .btn-start {
+            background: #feb47b;
+            color: #333;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-start:hover {
+            background: #ff7e5f;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Header Halaman */
+        .page-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+            color: #ffe6a7;
+        }
+
+        /* Kata Mutiara */
+        .quote {
+            text-align: center;
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-left: 4px solid #ff7e5f;
+            border-radius: 8px;
+        }
+
+        /* Galeri Foto (3 Gambar) */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .photo-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .photo-card:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-card .caption {
+            padding: 12px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #ddd;
+        }
+
+        /* Responsif untuk HP */
+        @media (max-width: 600px) {
+            .cover h1 { font-size: 2rem; }
+            .cover h2 { font-size: 1.4rem; }
+            nav { gap: 6px; padding: 10px; }
+            nav button { padding: 8px 12px; font-size: 0.8rem; }
+            .music-control { margin-left: 0; padding-left: 0; border-left: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Element Audio (Ganti src jika ingin memakai file mp3 sendiri) -->
+    <audio id="bg-music" loop>
+        <source src="https://h.top4top.io/m_390289s5q0.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
+    <!-- Navigasi -->
+    <nav>
+        <button class="nav-btn active" onclick="showPage('sampul')">Sampul</button>
+        <button class="nav-btn" onclick="showPage('kelas7')">Kelas 7</button>
+        <button class="nav-btn" onclick="showPage('kelas8')">Kelas 8</button>
+        <button class="nav-btn" onclick="showPage('kelas9')">Kelas 9</button>
+
+        <!-- Control Musik -->
+        <div class="music-control">
+            <button id="btn-play" class="btn-music" onclick="playMusic()">▶ Play Music</button>
+            <button id="btn-stop" class="btn-music" onclick="stopMusic()">⏹ Stop</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- HALAMAN SAMPUL -->
+        <div id="sampul" class="page cover active-page">
+            <h1>ALBUM KENANGAN INTERAKTIF</h1>
+            <h2>SMPN 1 PLEMAHAN</h2>
+            <p><strong>KELAS 9E</strong></p>
+            <p>"Setiap detik yang kita lewati bersama adalah kenangan indah yang takkan pernah pudar oleh waktu. Mari kenang kembali perjalanan kita dari awal hingga saat ini."</p>
+            <button class="btn-start" onclick="showPage('kelas7')">Buka Album</button>
+        </div>
+
+        <!-- HALAMAN 1: KELAS 7 -->
+        <div id="kelas7" class="page">
+            <h2 class="page-title">Kelas 7</h2>
+            <div class="quote">
+                "Awal dari sebuah kisah. Kita datang sebagai orang asing, belajar bersama, dan mulai merajai mimpi di bawah langit yang sama."
+            </div>
+            <div class="gallery">
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-07-e926f624-a944-4229-8c0e-701e68b3aee1.jpg" alt="Masa MPLS">
+                    <div class="caption">Awal Pertemuan (MPLS)</div>
+                </div>
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-05-80dc09ab-9478-4355-9d1e-9e08ac3664f1.jpg" alt="Kebersamaan di Kelas">
+                    <div class="caption">Canda Tawa Pertama</div>
+                </div>
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-04-03b5550c-c0b3-4f18-bd56-5661b46080fc.jpg" alt="Kegiatan Sekolah">
+                    <div class="caption">Kegiatan Lapangan Kelas 7</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN 2: KELAS 8 -->
+        <div id="kelas8" class="page">
+            <h2 class="page-title">Kelas 8</h2>
+            <div class="quote">
+                "Ikatan yang makin kuat. Di tahun ini, kekonyolan, persahabatan, dan perjuangan menyatu menjadi memori yang hangat."
+            </div>
+            <div class="gallery">
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-07-b4e648b1-f28e-4eaa-a80f-8c1df7b91ab4.jpg" alt="Belajar Bersama">
+                    <div class="caption">Kekompakan Belajar</div>
+                </div>
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-07-a58cba12-a209-4073-9aba-d62ff95b706d.jpg" alt="Acara Classmeeting">
+                    <div class="caption">Semangat Classmeeting</div>
+                </div>
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-07-0fdf1e5c-6d43-46ff-9168-83fe59d4e555.jpg" alt="Foto Bersama Teman">
+                    <div class="caption">Momen Kebersamaan 8E</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN 3: KELAS 9 -->
+        <div id="kelas9" class="page">
+            <h2 class="page-title">Kelas 9</h2>
+            <div class="quote">
+                "Puncak perjalanan SMP. Kita belajar bahwa perpisahan bukanlah akhir, melainkan awal dari petualangan baru yang lebih besar."
+            </div>
+            <div class="gallery">
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-07-0da240b0-b34e-49fd-9d52-47ece1070ac8.jpg" alt="Ujian Akhir">
+                    <div class="caption">Berjuang Bersama di Ujian</div>
+                </div>
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-05-e817834a-e592-46a9-894b-34bbdb1e94b6.jpg" alt="Foto Bersama Guru">
+                    <div class="caption">Kenangan Bersama Guru</div>
+                </div>
+                <div class="photo-card">
+                    <img src="https://cdn.phototourl.com/member/2026-09-07-bd0b5c5b-5391-4868-8582-a069255fb335.jpg" alt="Masa Akhir Sekolah">
+                    <div class="caption">Menjelang Perpisahan</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Interaktif -->
+    <script>
+        const audio = document.getElementById('bg-music');
+        const playBtn = document.getElementById('btn-play');
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active-page');
+            });
+
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(pageId).classList.add('active-page');
+
+            const activeButton = Array.from(buttons).find(btn => 
+                btn.getAttribute('onclick').includes(pageId)
+            );
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+
+            // Putar musik secara otomatis saat tombol "Buka Album" diklik
+            if (pageId === 'kelas7' && audio.paused) {
+                playMusic();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fungsi Memutar Musik
+        function playMusic() {
+            audio.play().then(() => {
+                playBtn.classList.add('playing');
+                playBtn.innerHTML = '🔊 Playing...';
+            }).catch(error => {
+                console.log("Autoplay diblokir oleh browser, butuh interaksi pengguna.");
+            });
+        }
+
+        // Fungsi Menghentikan Musik
+        function stopMusic() {
+            audio.pause();
+            audio.currentTime = 0;
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '▶ Play Music';
+        }
+    </script>
+</body>
+</html>
